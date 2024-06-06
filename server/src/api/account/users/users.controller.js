@@ -1,4 +1,5 @@
-import { UserModel,authenticateuser } from "./users.model.js";
+import { UserModel, authenticateuser } from "./users.model.js";
+import { prepareResponse } from "../../../utils/response-handler.js";
 
 export const signupUser = async (req, res) => {
   try {
@@ -32,11 +33,20 @@ export const signupUser = async (req, res) => {
 
 export const signinUser = async (req, res) => {
   const { email, password } = req.body;
-  const userResponse = await authenticateuser(email,password)
-  if (userResponse)
-    {
-      res.send(userResponse)
-    }
+  const userResponse = await authenticateuser(email, password);
 
+  //console.log("hk", !userResponse.results, userResponse.results);//true/false
+  //when password is incorrect it returns
+  /*{
+    "results": false,
+    "message": "Password is incorrect"
+}
+    */
+  if (!userResponse.results) {
+    //true when the password is incorrect
+    const results = prepareResponse(null, userResponse.message);
+    res.send(results);
+  }
 
+  //Issue Token
 };

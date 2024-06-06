@@ -31,25 +31,37 @@ userSchema.pre("save", function (next) {
   });
 });
 
-export const authenticateuser = async function (email, password)  {
-  try {
-//find etrieve multiple documents that match a query.
+//find retrieve multiple documents that match a query.
 //Return Value: An array of documents (even if only one document matches the query, it will still return an array with that single document).
 
 //findone   Retrieve a single document that matches a query.
 //Return Value: A single document object (or null if no documents match the query).
-    // console.log('*',this)
-    //this is giving an error
-    //Since authenticateuser is defined as an exported function and not as a method on an object, this will not refer to the object you expect.
+
+// console.log('*',this)
+//this is giving an error
+//Since authenticateuser is defined as an exported function and not as a method on an object, this will not refer to the object you expect.
+export const authenticateuser = async function (email, password) {
+  try {
     const user = await UserModel.findOne({ email: email });
-    if (user) {
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (isMatch) {
-        return user;
-      } else {
-        return { results: false, message: "Password is incorrect" };
-      }
+    if (!user) {
+      return { results: false, message: "User not found" };
     }
+
+    const isMatch = await user.comparePassword(password);
+
+    return isMatch
+      ? user
+      : { results: false, message: "Password is incorrect" };
+  } catch (err) {
+    throw err;
+  }
+};
+
+userSchema.methods.comparePassword = async function (password) {
+  try {
+    // console.log("this",this)
+    const isMatch = await bcrypt.compare(password, this.password); //or password, user.password
+    return isMatch;
   } catch (err) {
     throw err;
   }
