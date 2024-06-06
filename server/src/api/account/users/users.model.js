@@ -49,11 +49,21 @@ export const authenticateuser = async function (email, password) {
 
     const isMatch = await user.comparePassword(password);
 
-    return isMatch
-      ? user
-      : { results: false, message: "Password is incorrect" };
+    if (!isMatch) {
+      return { results: false, message: "Password is incorrect" };
+    }
+
+    const results = {
+      userId: user._id,
+      email: user.email,
+      userName: user.username,
+    };
+
+    return { results, message: "Password matched" };
+
   } catch (err) {
-    throw err;
+    // throw err;
+    return { results: false, message: "Unable to do authentication" };
   }
 };
 

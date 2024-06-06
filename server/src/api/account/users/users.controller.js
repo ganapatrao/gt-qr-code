@@ -42,11 +42,14 @@ export const signinUser = async (req, res) => {
     "message": "Password is incorrect"
 }
     */
+
   if (!userResponse.results) {
-    //true when the password is incorrect
+    //true when the password is incorrect i.e.userResponse.results = false
     const results = prepareResponse(null, userResponse.message);
-    res.send(results);
+  return  res.send(results);
   }
+
+return res.send(userResponse)
 
   //Issue Token
 };
