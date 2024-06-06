@@ -1,5 +1,6 @@
 import { UserModel, authenticateuser } from "./users.model.js";
 import { prepareResponse } from "../../../utils/response-handler.js";
+import { generateToken } from "../../../../services/jwt/jwt.service.js";
 
 export const signupUser = async (req, res) => {
   try {
@@ -46,10 +47,17 @@ export const signinUser = async (req, res) => {
   if (!userResponse.results) {
     //true when the password is incorrect i.e.userResponse.results = false
     const results = prepareResponse(null, userResponse.message);
-  return  res.send(results);
+    return res.send(results);
   }
 
-return res.send(userResponse)
+  // return res.send(userResponse)
 
   //Issue Token
+  // const userTokenDetails = generateToken({
+  //   userId: userResponse.results.userId,
+  // });
+   const userTokenDetails = generateToken({
+    userId: userResponse.results.userId,
+  });
+  return res.send(userTokenDetails);
 };
