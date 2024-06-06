@@ -1,4 +1,4 @@
-import { UserModel } from "./users.model.js";
+import { UserModel,authenticateuser } from "./users.model.js";
 
 export const signupUser = async (req, res) => {
   try {
@@ -29,4 +29,14 @@ export const signupUser = async (req, res) => {
     });
   }
 };
-export const signinUser = async (req, res) => {};
+
+export const signinUser = async (req, res) => {
+  const { email, password } = req.body;
+  const userResponse = await authenticateuser(email,password)
+  if (userResponse)
+    {
+      res.send(userResponse)
+    }
+
+
+};
