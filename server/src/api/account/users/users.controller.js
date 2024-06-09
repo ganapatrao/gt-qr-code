@@ -56,7 +56,7 @@ export const signinUser = async (req, res) => {
   // const userTokenDetails = generateToken({
   //   userId: userResponse.results.userId,
   // });
-   const userTokenDetails = generateToken({
+   const userTokenDetails = await generateToken({
     userId: userResponse.results.userId,
   });
   return res.send(userTokenDetails);
