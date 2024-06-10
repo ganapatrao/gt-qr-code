@@ -34,7 +34,7 @@ export const generateToken = async (payload) => {
     //query https://github.com/xDAnkit/qr-login/commit/c970015642c9267b9f39adfc70d25fb83a257077
 
     if (!userTokenData) {
-  // Create a new record if user token data doesn't exist
+      // Create a new record if user token data doesn't exist
       const newUserTokenData = new userTokenModel({
         userId: payload.userId,
         accessTokens: [accessToken],
@@ -93,12 +93,11 @@ export const regenerateToken = async (refreshToken) => {
     });
 
     //?? go through again
-    if (userData && userData?.refreshTokens.includes(refreshToken)) {
-      const newAccessToken = jwt.sign(decoded, JWT_PWD, { expiresIn: "1h" });
-      return { newAccessToken };
-    } else {
+    if (!userData && !userData?.refreshTokens.includes(refreshToken)) {
       throw new Error("Invalid token is provided");
     }
+    const newAccessToken = jwt.sign(decoded, JWT_PWD, { expiresIn: "1h" });
+    return { newAccessToken };
   } catch (error) {
     return { valid: false, error: error.message };
   }
@@ -113,7 +112,8 @@ export const destroyToken = async (token, type) => {
   // JWT tokens are stateless and cannot be destroyed server-side.
   // To 'destroy' a token, it must be invalidated on the client side, or added to a deny list on the server.
   try {
-    if (type !== "refreshTokens" && type !== "accessTokens") {
+    // if (type !== "refreshTokens" && type !== "accessTokens") {
+      if (!["refreshTokens", "accessTokens"].includes(type)) {
       throw new Error("Please provide a valid token type.");
     }
 
