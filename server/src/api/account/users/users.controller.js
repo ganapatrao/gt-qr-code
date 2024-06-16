@@ -50,14 +50,14 @@ export const signinUser = async (req, res) => {
     return res.send(results);
   }
 
-  // return res.send(userResponse)
-
   //Issue Token
-  // const userTokenDetails = generateToken({
-  //   userId: userResponse.results.userId,
-  // });
-   const userTokenDetails = await generateToken({
+  const userTokenDetails = await generateToken({
     userId: userResponse.results.userId,
   });
   return res.send(userTokenDetails);
+};
+
+export const getprofile = async (req, res) => {
+  const response = prepareResponse(req.user, "User Details found");
+  res.send(response);
 };

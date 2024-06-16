@@ -11,13 +11,14 @@ import { userTokenModel } from "./jwttokwn.model.js";
 export const generateToken = async (payload) => {
   //accepts plain object ==> var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
   //generate access token
+
   try {
     if (!JWT_PWD || !payload.userId || !ACCESS_EXP_IN || !REFRESH_EXP_IN) {
       throw new Error("Missign required env variables");
     }
 
     //generate access token
-    const accesstoken = jwt.sign(payload, JWT_PWD, {
+    const accessToken = jwt.sign(payload, JWT_PWD, {
       expiresIn: ACCESS_EXP_IN,
     });
 
@@ -26,6 +27,7 @@ export const generateToken = async (payload) => {
       expiresIn: REFRESH_EXP_IN,
     });
 
+    console.log("200", payload.userId);
     //Find user token in the database
     const userTokenData = await userTokenModel.findOne({
       userId: payload.userId,
@@ -49,7 +51,7 @@ export const generateToken = async (payload) => {
     userTokenData.refreshTokens.push(refreshToken);
     await userTokenData.save();
 
-    return { accesstoken, refreshToken };
+    return { accessToken, refreshToken };
   } catch (error) {
     console.log("Error generating tokens:", error);
     // Return an error response or rethrow the error based on your application needs
@@ -68,9 +70,11 @@ export const validateToken = (token) => {
     if (!JWT_PWD) {
       throw new Error("Missing required environment variable: JWT_PWD.");
     }
+
     const decoded = jwt.verify(token, JWT_PWD);
+
     if (decoded) {
-      return { valid: true, decoded };
+      return { valid: true, userInfo: decoded };
     }
   } catch (error) {
     console.log("Error validating token:", error);
@@ -113,7 +117,7 @@ export const destroyToken = async (token, type) => {
   // To 'destroy' a token, it must be invalidated on the client side, or added to a deny list on the server.
   try {
     // if (type !== "refreshTokens" && type !== "accessTokens") {
-      if (!["refreshTokens", "accessTokens"].includes(type)) {
+    if (!["refreshTokens", "accessTokens"].includes(type)) {
       throw new Error("Please provide a valid token type.");
     }
 
